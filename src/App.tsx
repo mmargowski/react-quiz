@@ -35,7 +35,6 @@ const App: React.FC = () => {
       Difficulty.EASY
     );
     setQuestions(newQuestions);
-    console.log(newQuestions);
 
     setScore(0);
     setUserAnswers([]);
