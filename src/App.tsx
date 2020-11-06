@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { ChangeEvent, useState } from 'react';
 import { fetchQuizQuestions } from './Api';
 // Components
 import QuestionCard from './components/QuestionCard';
@@ -25,15 +25,13 @@ const App: React.FC = () => {
   const [userAnswers, setUserAnswers] = useState<AnswerObject[]>([]);
   const [score, setScore] = useState(0);
   const [gameOver, setGameOver] = useState(true);
+  const [difficulty, setDifficulty] = useState<Difficulty>(Difficulty.EASY);
 
   const startTrivia = async () => {
     setLoading(true);
     setGameOver(false);
 
-    const newQuestions = await fetchQuizQuestions(
-      TOTAL_QUESTIONS,
-      Difficulty.EASY
-    );
+    const newQuestions = await fetchQuizQuestions(TOTAL_QUESTIONS, difficulty);
     setQuestions(newQuestions);
 
     setScore(0);
@@ -67,15 +65,36 @@ const App: React.FC = () => {
     }
   };
 
+  const changeDifficulty = (e: ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+
+    if (value === 'easy') {
+      setDifficulty(Difficulty.EASY);
+    }
+    if (value === 'medium') {
+      setDifficulty(Difficulty.MEDIUM);
+    }
+    setDifficulty(Difficulty.HARD);
+  };
+
   return (
     <>
       <GlobalStyle />
       <Wrapper className="App">
         <h1> React Quiz</h1>
         {gameOver || userAnswers.length === TOTAL_QUESTIONS ? (
-          <button className="start" onClick={startTrivia}>
-            Start
-          </button>
+          <div>
+            <label className="label">Choose difficulty: </label>
+            <select className="difficulty" onChange={changeDifficulty}>
+              <option value={Difficulty.EASY}>Easy</option>
+              <option value={Difficulty.MEDIUM}>Medium</option>
+              <option value={Difficulty.HARD}>Hard</option>
+            </select>
+            <br />
+            <button className="start" onClick={startTrivia}>
+              Start
+            </button>
+          </div>
         ) : null}
         {!gameOver ? <p className="score">Score: {score} </p> : null}
         {loading ? <p className="loading">Loading Questions ...</p> : null}
